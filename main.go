@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	contr := server.NewController(service.Service{})
+	contr := server.NewController(service.NewServiceImpl())
 	s := server.NewServer("8282", *contr)
 	go s.Start()
 	log.Println("Server is running")

@@ -17,7 +17,7 @@ func NewController(s service.Service) *Controller {
 	return &Controller{service: s}
 }
 
-// todo: переделать на одинаковые хендлеры, передавать лишь параметром shop/customer тип! повторяешься
+// todo: переделать на одинаковые хендлеры, передавать лишь параметром shoprepo/customerrepo тип! повторяешься
 // todo: сверить тогда насчет required полей, или опустить в сервис
 // todo: получить из json слайс байт и передавать в логику сервиса
 
@@ -29,9 +29,10 @@ func NewController(s service.Service) *Controller {
 func (c *Controller) ShopController(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	// если без <id> запрос
+	modelType := "shop"
 	if r.URL.Path == "/api/v1/shop/" {
 		if r.Method == http.MethodPost {
-			c.createShopHandler(w, r)
+			c.createHandler(w, r, modelType)
 			return
 		}
 		if r.Method == http.MethodGet {
@@ -41,7 +42,7 @@ func (c *Controller) ShopController(w http.ResponseWriter, r *http.Request) {
 				log.Println("Url Param 'name' is missing")
 			}
 			log.Println(keys)
-			c.getAllShopHandler(w, r)
+			c.getAllHandler(w, r, modelType)
 			return
 		}
 		http.Error(w, fmt.Sprintf("expect method GET or POST at /api/v1/shop/, got %v", r.Method), http.StatusMethodNotAllowed)
@@ -58,64 +59,21 @@ func (c *Controller) ShopController(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if r.Method == http.MethodPatch {
-			c.patchShopHandler(w, r)
+			c.patchHandler(w, r, modelType)
 			return
 		}
 		if r.Method == http.MethodDelete {
-			c.deleteShopHandler(w, r)
+			c.deleteHandler(w, r, modelType)
 			return
 		}
 		if r.Method == http.MethodGet {
-			c.getShopByIDHandler(w, r)
+			c.getByIDHandler(w, r, modelType)
+			return
 		}
 		http.Error(w, fmt.Sprintf("expect method DELETE or PATCH or GET at /api/v1/shop/<id>, got %v", r.Method), http.StatusMethodNotAllowed)
 		return
 	}
 
-}
-
-func (c *Controller) createShopHandler(w http.ResponseWriter, r *http.Request) {
-	var a map[string]interface{}
-	err := json.NewDecoder(r.Body).Decode(&a)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	fmt.Println(a)
-	return
-}
-
-func (c *Controller) patchShopHandler(w http.ResponseWriter, r *http.Request) {
-	path := strings.Trim(r.URL.Path, "/")
-	pathParts := strings.Split(path, "/")
-	id := pathParts[3]
-	fmt.Println(id)
-	var a map[string]interface{}
-	err := json.NewDecoder(r.Body).Decode(&a)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	fmt.Println("PATCHED")
-	return
-}
-
-func (c *Controller) deleteShopHandler(w http.ResponseWriter, r *http.Request) {
-	path := strings.Trim(r.URL.Path, "/")
-	pathParts := strings.Split(path, "/")
-	id := pathParts[3]
-	fmt.Println(id)
-}
-
-func (c *Controller) getAllShopHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (c *Controller) getShopByIDHandler(w http.ResponseWriter, r *http.Request) {
-	key, ok := r.URL.Query()["field"]
-	if ok {
-		fmt.Println("Have a key field: ", key)
-	}
 }
 
 // POST /api/v1/customer/
@@ -125,10 +83,11 @@ func (c *Controller) getShopByIDHandler(w http.ResponseWriter, r *http.Request) 
 // GET /api/v1/customer?surname={surname}&field={field}
 func (c *Controller) CustController(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	modelType := "customer"
 	// если без <id> запрос
 	if r.URL.Path == "/api/v1/customer/" {
 		if r.Method == http.MethodPost {
-			c.createShopHandler(w, r)
+			c.createHandler(w, r, modelType)
 			return
 		}
 		if r.Method == http.MethodGet {
@@ -138,10 +97,10 @@ func (c *Controller) CustController(w http.ResponseWriter, r *http.Request) {
 				log.Println("Url Param 'name' is missing")
 			}
 			log.Println(keys)
-			c.getAllShopHandler(w, r)
+			c.getAllHandler(w, r, modelType)
 			return
 		}
-		http.Error(w, fmt.Sprintf("expect method GET or POST at /api/v1/shop/, got %v", r.Method), http.StatusMethodNotAllowed)
+		http.Error(w, fmt.Sprintf("expect method GET or POST at /api/v1/customer/, got %v", r.Method), http.StatusMethodNotAllowed)
 		return
 	} else {
 		path := strings.Trim(r.URL.Path, "/")
@@ -155,15 +114,15 @@ func (c *Controller) CustController(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if r.Method == http.MethodPatch {
-			c.patchShopHandler(w, r)
+			c.patchHandler(w, r, modelType)
 			return
 		}
 		if r.Method == http.MethodDelete {
-			c.deleteShopHandler(w, r)
+			c.deleteHandler(w, r, modelType)
 			return
 		}
 		if r.Method == http.MethodGet {
-			c.getShopByIDHandler(w, r)
+			c.getByIDHandler(w, r, modelType)
 		}
 		http.Error(w, fmt.Sprintf("expect method DELETE or PATCH or GET at /api/v1/customer/<id>, got %v", r.Method), http.StatusMethodNotAllowed)
 		return
@@ -171,39 +130,58 @@ func (c *Controller) CustController(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (c *Controller) createCustHandler(w http.ResponseWriter, r *http.Request) {
-	var a map[string]interface{}
-	err := json.NewDecoder(r.Body).Decode(&a)
+func (c *Controller) createHandler(w http.ResponseWriter, r *http.Request, model string) {
+	var msg json.RawMessage
+	err := json.NewDecoder(r.Body).Decode(&msg)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println(a)
-	return
-}
-
-func (c *Controller) patchCustHandler(w http.ResponseWriter, r *http.Request) {
-	path := strings.Trim(r.URL.Path, "/")
-	pathParts := strings.Split(path, "/")
-	id := pathParts[3]
-	fmt.Println(id)
-	var a map[string]interface{}
-	err := json.NewDecoder(r.Body).Decode(&a)
+	err = c.service.Create(msg, model)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println("PATCHED")
 	return
 }
 
-func (c *Controller) deleteCustHandler(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) patchHandler(w http.ResponseWriter, r *http.Request, model string) {
 	path := strings.Trim(r.URL.Path, "/")
 	pathParts := strings.Split(path, "/")
 	id := pathParts[3]
-	fmt.Println(id)
+	var msg json.RawMessage
+	err := json.NewDecoder(r.Body).Decode(&msg)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	log.Println("Controller sending patch " + model + " with id " + id)
+	c.service.Update(msg, id, model)
+	return
 }
 
-func (c *Controller) getAllCustHandler(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) deleteHandler(w http.ResponseWriter, r *http.Request, model string) {
+	path := strings.Trim(r.URL.Path, "/")
+	pathParts := strings.Split(path, "/")
+	id := pathParts[3]
+	log.Println("Controller sending delete " + model + " with id " + id)
+	c.service.Delete(id, model)
+	//todo handle error in response
+}
 
+func (c *Controller) getAllHandler(w http.ResponseWriter, r *http.Request, model string) {
+
+}
+
+func (c *Controller) getByIDHandler(w http.ResponseWriter, r *http.Request, model string) {
+	key, ok := r.URL.Query()["field"]
+	if ok {
+		fmt.Println("Have a key field: ", key)
+	}
+	path := strings.Trim(r.URL.Path, "/")
+	pathParts := strings.Split(path, "/")
+	id := pathParts[3]
+	msg := c.service.GetById(id, "", model)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(msg)
 }
