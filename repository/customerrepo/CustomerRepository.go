@@ -5,8 +5,9 @@ import (
 )
 
 type CustomerRepository interface {
-	Create(model.Customer) error
+	Create(model.Customer) (string, error)
 	Update(model.Customer, string) error
 	Delete(string) error
-	GetById(string, string) (model.Customer, error)
+	GetById(string) (model.Customer, error)
+	GetBySurname(string) (model.Customer, error)
 }

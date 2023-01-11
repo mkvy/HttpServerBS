@@ -1,8 +1,8 @@
 package shoprepo
 
 import (
-	"errors"
 	"github.com/google/uuid"
+	"github.com/mkvy/HttpServerBS/internal/utils"
 	"github.com/mkvy/HttpServerBS/model"
 	"log"
 )
@@ -16,18 +16,18 @@ func NewMemoryShopRepo() *MemoryShopRepo {
 	return &MemoryShopRepo{storage: make(map[string]model.Shop)}
 }
 
-func (repo *MemoryShopRepo) Create(data model.Shop) error {
+func (repo *MemoryShopRepo) Create(data model.Shop) (string, error) {
 	id := uuid.New()
 	repo.storage[id.String()] = data
 	log.Println("Created record with id: " + id.String())
-	return nil
+	return id.String(), nil
 }
 
 func (repo *MemoryShopRepo) GetById(id string) (model.Shop, error) {
 	val, ok := repo.storage[id]
 	log.Println("Getting record with id: " + id)
 	if !ok {
-		return model.Shop{}, errors.New("Not found by ID")
+		return model.Shop{}, utils.ErrNotFound
 	}
 	return val, nil
 }
@@ -57,7 +57,17 @@ func (repo *MemoryShopRepo) Delete(id string) error {
 	if _, ok := repo.storage[id]; ok {
 		delete(repo.storage, id)
 	} else {
-		return errors.New("No record with ID " + id)
+		return utils.ErrNotFound
 	}
 	return nil
+}
+
+func (repo *MemoryShopRepo) GetByName(name string) (model.Shop, error) {
+	for key, element := range repo.storage {
+		if element.Name == name {
+			log.Println("Found by name " + name + " element with id " + key)
+			return element, nil
+		}
+	}
+	return model.Shop{}, utils.ErrNotFound
 }

@@ -15,6 +15,7 @@ func NewServer(port string, c Controller) *Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/v1/shop/", c.ShopController)
 	mux.HandleFunc("/api/v1/customer/", c.CustController)
+	mux.HandleFunc("/api/v1/test/", c.testEndpoint)
 	server := &http.Server{Addr: ":" + port, Handler: mux}
 	return &Server{server, port}
 }
