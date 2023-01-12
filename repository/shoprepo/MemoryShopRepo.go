@@ -5,11 +5,12 @@ import (
 	"github.com/mkvy/HttpServerBS/internal/utils"
 	"github.com/mkvy/HttpServerBS/model"
 	"log"
+	"sync"
 )
 
 type MemoryShopRepo struct {
-	//todo config
 	storage map[string]model.Shop
+	mx      sync.RWMutex
 }
 
 func NewMemoryShopRepo() *MemoryShopRepo {
@@ -17,6 +18,9 @@ func NewMemoryShopRepo() *MemoryShopRepo {
 }
 
 func (repo *MemoryShopRepo) Create(data model.Shop) (string, error) {
+	log.Println("MemoryCustomerRepo Creating record")
+	repo.mx.Lock()
+	defer repo.mx.Unlock()
 	id := uuid.New()
 	repo.storage[id.String()] = data
 	log.Println("Created record with id: " + id.String())
@@ -24,6 +28,8 @@ func (repo *MemoryShopRepo) Create(data model.Shop) (string, error) {
 }
 
 func (repo *MemoryShopRepo) GetById(id string) (model.Shop, error) {
+	repo.mx.RLock()
+	defer repo.mx.RUnlock()
 	val, ok := repo.storage[id]
 	log.Println("Getting record with id: " + id)
 	if !ok {
@@ -34,6 +40,8 @@ func (repo *MemoryShopRepo) GetById(id string) (model.Shop, error) {
 
 func (repo *MemoryShopRepo) Update(data model.Shop, id string) error {
 	record, err := repo.GetById(id)
+	repo.mx.Lock()
+	defer repo.mx.Unlock()
 	if err != nil {
 		return err
 	}
@@ -54,6 +62,8 @@ func (repo *MemoryShopRepo) Update(data model.Shop, id string) error {
 }
 
 func (repo *MemoryShopRepo) Delete(id string) error {
+	repo.mx.Lock()
+	defer repo.mx.Unlock()
 	if _, ok := repo.storage[id]; ok {
 		delete(repo.storage, id)
 	} else {
@@ -63,6 +73,8 @@ func (repo *MemoryShopRepo) Delete(id string) error {
 }
 
 func (repo *MemoryShopRepo) GetByName(name string) (model.Shop, error) {
+	repo.mx.RLock()
+	defer repo.mx.RUnlock()
 	for key, element := range repo.storage {
 		if element.Name == name {
 			log.Println("Found by name " + name + " element with id " + key)

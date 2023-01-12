@@ -5,13 +5,13 @@ import (
 	"github.com/mkvy/HttpServerBS/internal/utils"
 	"github.com/mkvy/HttpServerBS/model"
 	"log"
+	"sync"
 	"time"
 )
 
 type MemoryCustomerRepo struct {
-	//todo config
-	//todo mutex
 	storage map[string]model.Customer
+	mx      sync.RWMutex
 }
 
 func NewMemoryCustomerRepo() *MemoryCustomerRepo {
@@ -19,7 +19,9 @@ func NewMemoryCustomerRepo() *MemoryCustomerRepo {
 }
 
 func (repo *MemoryCustomerRepo) Create(data model.Customer) (string, error) {
-	log.Println("Creating record")
+	log.Println("MemoryCustomerRepo Creating record")
+	repo.mx.Lock()
+	defer repo.mx.Unlock()
 	id := uuid.New()
 	dateCreated := time.Now()
 	data.DateCreated = &dateCreated
@@ -29,6 +31,8 @@ func (repo *MemoryCustomerRepo) Create(data model.Customer) (string, error) {
 }
 
 func (repo *MemoryCustomerRepo) GetById(id string) (model.Customer, error) {
+	repo.mx.RLock()
+	defer repo.mx.RUnlock()
 	val, ok := repo.storage[id]
 	log.Println("Getting record with id: " + id)
 	if !ok {
@@ -39,6 +43,8 @@ func (repo *MemoryCustomerRepo) GetById(id string) (model.Customer, error) {
 
 func (repo *MemoryCustomerRepo) Update(data model.Customer, id string) error {
 	record, err := repo.GetById(id)
+	repo.mx.Lock()
+	defer repo.mx.Unlock()
 	if err != nil {
 		return err
 	}
@@ -63,6 +69,8 @@ func (repo *MemoryCustomerRepo) Update(data model.Customer, id string) error {
 }
 
 func (repo *MemoryCustomerRepo) Delete(id string) error {
+	repo.mx.Lock()
+	defer repo.mx.Unlock()
 	if _, ok := repo.storage[id]; ok {
 		delete(repo.storage, id)
 	} else {
@@ -72,6 +80,8 @@ func (repo *MemoryCustomerRepo) Delete(id string) error {
 }
 
 func (repo *MemoryCustomerRepo) GetBySurname(surname string) (model.Customer, error) {
+	repo.mx.RLock()
+	defer repo.mx.RUnlock()
 	for key, element := range repo.storage {
 		if element.Surname == surname {
 			log.Println("Found by surname " + surname + " element with id " + key)
