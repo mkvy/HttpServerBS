@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
-	"github.com/mkvy/HttpServerBS/internal/config"
 	"github.com/mkvy/HttpServerBS/internal/utils"
 	"github.com/mkvy/HttpServerBS/model"
 	"log"
@@ -14,30 +13,11 @@ import (
 )
 
 type DBCustomerRepo struct {
-	db  *sql.DB
-	cfg config.Config
+	db *sql.DB
 }
 
-func NewPGCustomerRepository(cfg config.Config) (*DBCustomerRepo, error) {
-	log.Println("Creating DB connection in DB Customer repository with driver " + cfg.Database.DriverName)
-	connStr := "user=" + cfg.Database.Username + " password=" + cfg.Database.Password + " dbname=" + cfg.Database.DBname + " sslmode=disable"
-	fmt.Println(connStr)
-	db, err := sql.Open(cfg.Database.DriverName, connStr)
-	if err != nil {
-		log.Println("Error while connecting to db")
-		log.Println(err)
-		return nil, utils.ErrDbConnect
-	}
-	if db == nil {
-		log.Println("Error with database")
-		panic("missing db")
-	}
-	return &DBCustomerRepo{db: db, cfg: cfg}, nil
-}
-
-func (repo *DBCustomerRepo) Close() error {
-	err := repo.db.Close()
-	return err
+func NewDBCustomerRepository(dbConn *sql.DB) *DBCustomerRepo {
+	return &DBCustomerRepo{db: dbConn}
 }
 
 func (repo *DBCustomerRepo) Create(data model.Customer) (string, error) {
@@ -45,7 +25,7 @@ func (repo *DBCustomerRepo) Create(data model.Customer) (string, error) {
 
 	sqlStatement := `INSERT INTO customers VALUES ($1,$2,$3,$4,$5,$6);`
 	id := uuid.New()
-	res, err := repo.db.Exec(sqlStatement, id, data.Surname, data.Firstname, data.Patronym, data.Age, time.Now())
+	res, err := repo.db.Exec(sqlStatement, id.String(), data.Surname, data.Firstname, data.Patronym, data.Age, time.Now())
 	if err != nil {
 		log.Println("DBCustomerRepo Error occured while creating record: ", err)
 		return "", err
@@ -82,28 +62,28 @@ func (repo *DBCustomerRepo) GetById(id string) (model.Customer, error) {
 
 func (repo *DBCustomerRepo) Update(data model.Customer, id string) error {
 	log.Println("DBCustomerRepo Update record id: ", id)
-	sqlStatement := `UPDATE customers`
+	sqlStatement := `UPDATE customers SET`
 	cntFields := 0
 	if data.Surname != "" {
 		cntFields++
-		sqlStatement += ` SET surname='` + data.Surname + `',`
+		sqlStatement += ` surname='` + data.Surname + `',`
 	}
 	if data.Firstname != "" {
 		cntFields++
-		sqlStatement += ` SET firstname='` + data.Firstname + `',`
+		sqlStatement += ` firstname='` + data.Firstname + `',`
 	}
 	if data.Patronym != "" {
 		cntFields++
-		sqlStatement += ` SET patronym='` + data.Patronym + `',`
+		sqlStatement += ` patronym='` + data.Patronym + `',`
 	}
 	if data.Age != "" {
 		cntFields++
-		sqlStatement += ` SET age='` + data.Age + `',`
+		sqlStatement += ` age='` + data.Age + `',`
 	}
 	if data.DateCreated != nil {
 		cntFields++
 		tempt := *data.DateCreated
-		sqlStatement += ` SET date_created='` + tempt.String() + `',`
+		sqlStatement += ` date_created='` + tempt.String() + `',`
 	}
 	if cntFields == 0 {
 		log.Println("DBCustomerRepo Wrong data given to update")

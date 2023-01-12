@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
 	"github.com/mkvy/HttpServerBS/internal/config"
+	"github.com/mkvy/HttpServerBS/internal/utils"
 	"github.com/mkvy/HttpServerBS/model"
 	"github.com/mkvy/HttpServerBS/repository/customerrepo"
 	"github.com/mkvy/HttpServerBS/repository/shoprepo"
@@ -15,13 +16,16 @@ type ServiceImpl struct {
 	custRepo customerrepo.CustomerRepository
 }
 
-func NewServiceImpl() *ServiceImpl {
-	repo, err := customerrepo.NewPGCustomerRepository(config.NewConfigFromFile())
+func NewServiceImpl(cfg config.Config) *ServiceImpl {
+	db, err := utils.GetDBConn(cfg)
 	if err != nil {
-		log.Println("ServiceImpl Error in creating db conn: ", err)
+		log.Println("ServiceImpl Error with database")
+		panic("Error with database: " + err.Error())
 	}
+	customerRepo := customerrepo.NewDBCustomerRepository(db)
+	shopRepo := shoprepo.NewDBShopRepository(db)
 	//todo check err
-	return &ServiceImpl{shopRepo: shoprepo.NewMemoryShopRepo(), custRepo: repo}
+	return &ServiceImpl{shopRepo: shopRepo, custRepo: customerRepo}
 }
 
 func (s *ServiceImpl) Create(jsonData json.RawMessage, modelType string) (string, error) {
