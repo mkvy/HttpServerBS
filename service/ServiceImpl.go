@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
+	"github.com/mkvy/HttpServerBS/internal/config"
 	"github.com/mkvy/HttpServerBS/model"
 	"github.com/mkvy/HttpServerBS/repository/customerrepo"
 	"github.com/mkvy/HttpServerBS/repository/shoprepo"
@@ -15,7 +16,12 @@ type ServiceImpl struct {
 }
 
 func NewServiceImpl() *ServiceImpl {
-	return &ServiceImpl{shopRepo: shoprepo.NewMemoryShopRepo(), custRepo: customerrepo.NewMemoryCustomerRepo()}
+	repo, err := customerrepo.NewPGCustomerRepository(config.NewConfigFromFile())
+	if err != nil {
+		log.Println("ServiceImpl Error in creating db conn: ", err)
+	}
+	//todo check err
+	return &ServiceImpl{shopRepo: shoprepo.NewMemoryShopRepo(), custRepo: repo}
 }
 
 func (s *ServiceImpl) Create(jsonData json.RawMessage, modelType string) (string, error) {
@@ -71,7 +77,7 @@ func (s *ServiceImpl) Update(jsonData json.RawMessage, id string, modelType stri
 		}
 		err = s.shopRepo.Update(data, id)
 		if err != nil {
-			log.Println("Shop UpdateService error ", err)
+			log.Println("ServiceImpl Shop UpdateService error ", err)
 			return err
 		}
 	} else if modelType == "customer" {
@@ -83,7 +89,7 @@ func (s *ServiceImpl) Update(jsonData json.RawMessage, id string, modelType stri
 		}
 		err = s.custRepo.Update(data, id)
 		if err != nil {
-			log.Println("Customer UpdateService error ", err)
+			log.Println("ServiceImpl Customer UpdateService error ", err)
 			return err
 		}
 	}

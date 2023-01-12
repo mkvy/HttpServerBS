@@ -10,6 +10,7 @@ import (
 
 type MemoryCustomerRepo struct {
 	//todo config
+	//todo mutex
 	storage map[string]model.Customer
 }
 

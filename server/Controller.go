@@ -142,6 +142,7 @@ func (c *Controller) createHandler(w http.ResponseWriter, r *http.Request, model
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintf(w, `{"id": "%s"}`, id)
 	return
 }
@@ -157,7 +158,19 @@ func (c *Controller) patchHandler(w http.ResponseWriter, r *http.Request, model 
 		return
 	}
 	log.Println("Controller sending patch " + model + " with id " + id)
-	c.service.Update(msg, id, model)
+	err = c.service.Update(msg, id, model)
+	if err != nil {
+		if err == utils.ErrNotFound {
+			returnError(w, err.Error(), http.StatusNotFound)
+			return
+		} else if err == utils.ErrWrongEntity {
+			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+			return
+		} else {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+	}
 	return
 }
 
@@ -176,6 +189,7 @@ func (c *Controller) deleteHandler(w http.ResponseWriter, r *http.Request, model
 			return
 		}
 	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (c *Controller) getByParameters(w http.ResponseWriter, r *http.Request, model string) {

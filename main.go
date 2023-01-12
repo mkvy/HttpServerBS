@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/lib/pq"
 	"github.com/mkvy/HttpServerBS/server"
 	"github.com/mkvy/HttpServerBS/service"
 	"log"
