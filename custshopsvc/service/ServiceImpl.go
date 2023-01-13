@@ -24,11 +24,9 @@ func NewServiceImpl(cfg config.Config) *ServiceImpl {
 	}
 	customerRepo := customerrepo.NewDBCustomerRepository(db)
 	shopRepo := shoprepo.NewDBShopRepository(db)
-	//todo check err
 	return &ServiceImpl{shopRepo: shopRepo, custRepo: customerRepo}
 }
 
-// todo maybe возвращать json.RawMessage, как и ниже
 func (s *ServiceImpl) Create(jsonData json.RawMessage, modelType string) (string, string) {
 	var id string
 	if modelType == "shop" {

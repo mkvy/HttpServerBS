@@ -2,7 +2,6 @@ package utils
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/mkvy/HttpServerBS/custshopsvc/internal/config"
 	"log"
 	"sync"
@@ -16,7 +15,6 @@ func GetDBConn(cfg config.Config) (*sql.DB, error) {
 	once.Do(func() {
 		log.Println("Creating DB connection in DB Shop repository with driver " + cfg.Database.DriverName)
 		connStr := "user=" + cfg.Database.Username + " password=" + cfg.Database.Password + " dbname=" + cfg.Database.DBname + " sslmode=disable"
-		fmt.Println(connStr)
 		db, err = sql.Open(cfg.Database.DriverName, connStr)
 		if err != nil {
 			log.Println("Error while connecting to db")

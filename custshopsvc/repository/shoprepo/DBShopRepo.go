@@ -2,7 +2,6 @@ package shoprepo
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/mkvy/HttpServerBS/custshopsvc/internal/utils"
@@ -86,7 +85,6 @@ func (repo *DBShopRepo) Update(data model.Shop, id string) error {
 	}
 	sqlStatement = strings.TrimSuffix(sqlStatement, ",")
 	sqlStatement += ` where id=$1;`
-	fmt.Println(sqlStatement)
 	res, err := repo.db.Exec(sqlStatement, id)
 	if err != nil {
 		log.Println("DBShopRepo Error occured while updating record: ", err)

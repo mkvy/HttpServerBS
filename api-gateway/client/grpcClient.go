@@ -3,10 +3,12 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"github.com/mkvy/HttpServerBS/api-gateway/internal/config"
 	pb "github.com/mkvy/HttpServerBS/api-gateway/protofiles"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
+	"net"
 )
 
 type CustShopService interface {
@@ -21,15 +23,11 @@ type grpcClient struct {
 	client pb.CustShopServiceClient
 }
 
-const address = "localhost:9111"
-
-// todo config
-func NewGrpcClient() *grpcClient {
-	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+func NewGrpcClient(cfg config.Config) *grpcClient {
+	conn, err := grpc.Dial(net.JoinHostPort(cfg.GrpcServer.Host, cfg.GrpcServer.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Error while making connection, %v", err)
 	}
-
 	client := pb.NewCustShopServiceClient(conn)
 	return &grpcClient{client: client}
 }

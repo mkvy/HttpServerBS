@@ -23,8 +23,7 @@ func NewGrpcServer(cfg config.Config, handler grpcController) *grpcServer {
 }
 
 func (s *grpcServer) Start() {
-	//todo port grpc
-	lis, err := net.Listen("tcp", ":9111")
+	lis, err := net.Listen("tcp", ":"+s.cfg.GrpcServer.Port)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
@@ -32,6 +31,7 @@ func (s *grpcServer) Start() {
 	if err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
+	log.Println("Grpc server is running")
 }
 
 func (s *grpcServer) Stop() {

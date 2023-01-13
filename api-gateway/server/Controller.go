@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/mkvy/HttpServerBS/api-gateway/client"
 	"github.com/mkvy/HttpServerBS/api-gateway/internal/utils"
-	"github.com/mkvy/HttpServerBS/api-gateway/model"
 	"log"
 	"net/http"
 	"strings"
@@ -266,18 +265,4 @@ func returnError(w http.ResponseWriter, err string, status int) {
 		return
 	}
 	fmt.Fprintf(w, `{"error": "%s: %s"}`, http.StatusText(status), err)
-}
-
-func (c *Controller) testEndpoint(w http.ResponseWriter, r *http.Request) {
-	/*msg := model.Shop{
-		Name: "asd",
-	}
-	m, _ := json.Marshal(msg)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(m)*/
-	var msg json.RawMessage
-	_ = json.NewDecoder(r.Body).Decode(&msg)
-	var msg1 model.Shop
-	json.Unmarshal(msg, msg1)
-	fmt.Println(msg1)
 }

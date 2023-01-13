@@ -17,6 +17,10 @@ type Config struct {
 		Host string `yaml:"host"`
 		Port string `yaml:"port"`
 	} `yaml:"http-server"`
+	GrpcServer struct {
+		Host string `yaml:"host"`
+		Port string `yaml:"port"`
+	} `yaml:"grpc-server"`
 }
 
 func NewConfigFromFile() Config {
