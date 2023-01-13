@@ -1,0 +1,11 @@
+database:
+  user: "postgres"
+  pass: "postgres"
+  dbname: "testtask_dev"
+  driverName: "postgres"
+http-server:
+  host: "localhost"
+  port: 8181
+grpc-server:
+  host: "localhost"
+  port: 9111

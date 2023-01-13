@@ -1,0 +1,7 @@
+http-server:
+  host: "localhost"
+  port: 8282
+
+grpc-server:
+  host: "localhost"
+  port: 9111
