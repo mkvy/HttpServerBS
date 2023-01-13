@@ -56,7 +56,7 @@ ___
 
 `POST /api/v1/customer/`
 
-Содержит raw body с json покупателя
+Содержит raw body с json покупателя.
 ```
 {
     "surname":"Familiya",
@@ -127,7 +127,7 @@ ___
 ### Изменить покупателя
 #### Request
 
-`PATCH /api/v1/customer/`
+`PATCH /api/v1/customer/{id}`
 
 Содержит raw body с json полями, которые необходимо изменить
 ```
@@ -172,7 +172,7 @@ ___
 
 `POST /api/v1/shop/`
 
-Содержит raw body с json магазина
+Содержит raw body с json магазина.
 ```
 {
     "name":"Final test",
@@ -243,7 +243,7 @@ ___
 ### Изменить запись о магазине
 #### Request
 
-`PATCH /api/v1/shop/`
+`PATCH /api/v1/shop/{id}`
 
 Содержит raw body с json полями, которые необходимо изменить
 ```
