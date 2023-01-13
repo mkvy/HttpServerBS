@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package protofiles;
+
+
+service CustShopService {
+  rpc CreateService(CreateRequest) returns (CreateResponse) {}
+  rpc UpdateService(UpdateRequest) returns (ErrorResponse) {}
+  rpc DeleteService(DeleteRequest) returns (ErrorResponse) {}
+  rpc GetByIDService(GetByIDRequest) returns (ModelResponse) {}
+  rpc GetByParameters(GetByParametersRequest) returns (ModelResponse) {}
+}
+
+message CreateRequest {
+  bytes jsondata = 1;
+  string modelType = 2;
+}
+
+message UpdateRequest {
+  bytes jsondata = 1;
+  string id = 2;
+  string modelType = 3;
+}
+
+message DeleteRequest {
+  string id = 1;
+  string modelType = 2;
+}
+
+message GetByIDRequest {
+  string id = 1;
+  string field = 2;
+  string modelType = 3;
+}
+
+message GetByParametersRequest {
+  string searchParam = 1;
+  string field = 2;
+  string modelType = 3;
+}
+
+message CreateResponse {
+  string id = 1;
+  string error = 2;
+}
+
+message ErrorResponse {
+  string error = 1;
+}
+
+message ModelResponse {
+  bytes jsondata = 1;
+  string error = 2;
+}
