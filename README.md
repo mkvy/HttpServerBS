@@ -39,7 +39,7 @@ ___
 // GET /api/v1/customer?surname={surname}&field={field}
 // GET /api/v1/customer/{id}?field={field}
 ```
-Запросы к записям о магазинах:
+### Запросы к записям о магазинах:
 ```
 // POST /api/v1/shop/
 // PATCH /api/v1/shop/{id}
@@ -49,7 +49,7 @@ ___
 // GET /api/v1/shop/{id}?field={field}
 ```
 ---
-# REST API для записей о покупателях
+# API запросы для записей о покупателях
 ## Создание
 ### Создать покупателя
 #### Request
@@ -165,7 +165,7 @@ ___
 
     {"error": "Not Found: Record not found"}
 
-# REST API для записей о магазинах
+# API запросы для записей о магазинах
 ## Создание
 ### Создать магазин
 #### Request
