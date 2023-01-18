@@ -12,7 +12,7 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/1-init.sql
       - ./data.sql:/docker-entrypoint-initdb.d/2-data.sql
-      - ./dbdata:/var/lib/postgresql/data
+      - ./_dbdata:/var/lib/postgresql/data
     networks:
       backend:
         aliases:

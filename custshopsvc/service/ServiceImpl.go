@@ -5,9 +5,9 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/mkvy/HttpServerBS/custshopsvc/internal/config"
 	"github.com/mkvy/HttpServerBS/custshopsvc/internal/utils"
-	"github.com/mkvy/HttpServerBS/custshopsvc/model"
 	"github.com/mkvy/HttpServerBS/custshopsvc/repository/customerrepo"
 	"github.com/mkvy/HttpServerBS/custshopsvc/repository/shoprepo"
+	"github.com/mkvy/HttpServerBS/shared/model"
 	"log"
 )
 

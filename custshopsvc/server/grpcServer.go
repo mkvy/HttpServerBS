@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/mkvy/HttpServerBS/custshopsvc/internal/config"
-	pb "github.com/mkvy/HttpServerBS/custshopsvc/protofiles"
+	pb "github.com/mkvy/HttpServerBS/shared/protofiles"
 	"google.golang.org/grpc"
 	"log"
 	"net"

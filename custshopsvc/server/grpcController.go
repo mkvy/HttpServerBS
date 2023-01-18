@@ -2,8 +2,8 @@ package server
 
 import (
 	"context"
-	pb "github.com/mkvy/HttpServerBS/custshopsvc/protofiles"
 	"github.com/mkvy/HttpServerBS/custshopsvc/service"
+	pb "github.com/mkvy/HttpServerBS/shared/protofiles"
 	"log"
 )
 

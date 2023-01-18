@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/mkvy/HttpServerBS/api-gateway/internal/config"
-	pb "github.com/mkvy/HttpServerBS/api-gateway/protofiles"
+	pb "github.com/mkvy/HttpServerBS/shared/protofiles"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"

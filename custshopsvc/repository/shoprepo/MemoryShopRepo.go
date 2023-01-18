@@ -3,7 +3,7 @@ package shoprepo
 import (
 	"github.com/google/uuid"
 	"github.com/mkvy/HttpServerBS/custshopsvc/internal/utils"
-	"github.com/mkvy/HttpServerBS/custshopsvc/model"
+	"github.com/mkvy/HttpServerBS/shared/model"
 	"log"
 	"sync"
 )

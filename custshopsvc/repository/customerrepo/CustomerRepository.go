@@ -1,7 +1,7 @@
 package customerrepo
 
 import (
-	"github.com/mkvy/HttpServerBS/custshopsvc/model"
+	"github.com/mkvy/HttpServerBS/shared/model"
 )
 
 type CustomerRepository interface {

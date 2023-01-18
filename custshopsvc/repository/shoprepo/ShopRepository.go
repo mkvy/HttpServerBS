@@ -1,7 +1,7 @@
 package shoprepo
 
 import (
-	"github.com/mkvy/HttpServerBS/custshopsvc/model"
+	"github.com/mkvy/HttpServerBS/shared/model"
 )
 
 type ShopRepository interface {
