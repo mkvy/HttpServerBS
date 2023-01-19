@@ -12,8 +12,8 @@ import (
 )
 
 type CustShopService interface {
-	Create(json.RawMessage, string) (string, string)
-	Update(json.RawMessage, string, string) string
+	Create(interface{}, string) (string, string)
+	Update(interface{}, string, string) string
 	Delete(string, string) string
 	GetById(string, string, string) (json.RawMessage, string)
 	GetByParameters(string, string, string) (json.RawMessage, string)
@@ -32,10 +32,10 @@ func NewGrpcClient(cfg config.Config) *grpcClient {
 	return &grpcClient{client: client}
 }
 
-func (gc *grpcClient) Create(msg json.RawMessage, modelType string) (string, string) {
+func (gc *grpcClient) Create(msg interface{}, modelType string) (string, string) {
 	log.Println("GrpcClient Create request")
 	req := &pb.CreateRequest{
-		Jsondata:  msg,
+		Jsondata:  msg.([]byte),
 		ModelType: modelType,
 	}
 	resp, err := gc.client.CreateService(context.Background(), req)
@@ -47,10 +47,10 @@ func (gc *grpcClient) Create(msg json.RawMessage, modelType string) (string, str
 	return resp.Id, resp.Error
 }
 
-func (gc *grpcClient) Update(msg json.RawMessage, id string, modelType string) string {
+func (gc *grpcClient) Update(msg interface{}, id string, modelType string) string {
 	log.Println("GrpcClient Update request")
 	req := &pb.UpdateRequest{
-		Jsondata:  msg,
+		Jsondata:  msg.([]byte),
 		Id:        id,
 		ModelType: modelType,
 	}

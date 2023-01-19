@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/mkvy/HttpServerBS/custshopsvc/internal/config"
 	"github.com/mkvy/HttpServerBS/custshopsvc/internal/utils"
@@ -27,11 +28,12 @@ func NewServiceImpl(cfg config.Config) *ServiceImpl {
 	return &ServiceImpl{shopRepo: shopRepo, custRepo: customerRepo}
 }
 
-func (s *ServiceImpl) Create(jsonData json.RawMessage, modelType string) (string, string) {
+func (s *ServiceImpl) Create(jsonData interface{}, modelType string) (string, string) {
 	var id string
 	if modelType == "shop" {
 		var data model.Shop
-		err := json.Unmarshal(jsonData, &data)
+		err := json.Unmarshal(jsonData.([]byte), &data)
+		fmt.Println(data)
 		if err != nil {
 			log.Println(err)
 			return "", err.Error()
@@ -50,7 +52,9 @@ func (s *ServiceImpl) Create(jsonData json.RawMessage, modelType string) (string
 		}
 	} else if modelType == "customer" {
 		var data model.Customer
-		err := json.Unmarshal(jsonData, &data)
+		err := json.Unmarshal(jsonData.([]byte), &data)
+		fmt.Println(jsonData.([]byte))
+		fmt.Println(data)
 		if err != nil {
 			log.Println(err)
 			return "", err.Error()
@@ -71,10 +75,10 @@ func (s *ServiceImpl) Create(jsonData json.RawMessage, modelType string) (string
 	return id, ""
 }
 
-func (s *ServiceImpl) Update(jsonData json.RawMessage, id string, modelType string) string {
+func (s *ServiceImpl) Update(jsonData interface{}, id string, modelType string) string {
 	if modelType == "shop" {
 		var data model.Shop
-		err := json.Unmarshal(jsonData, &data)
+		err := json.Unmarshal(jsonData.([]byte), &data)
 		if err != nil {
 			log.Println(err)
 			return err.Error()
@@ -86,7 +90,7 @@ func (s *ServiceImpl) Update(jsonData json.RawMessage, id string, modelType stri
 		}
 	} else if modelType == "customer" {
 		var data model.Customer
-		err := json.Unmarshal(jsonData, &data)
+		err := json.Unmarshal(jsonData.([]byte), &data)
 		if err != nil {
 			log.Println(err)
 			return err.Error()

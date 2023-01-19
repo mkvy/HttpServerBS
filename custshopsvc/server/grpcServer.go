@@ -35,5 +35,6 @@ func (s *grpcServer) Start() {
 }
 
 func (s *grpcServer) Stop() {
+	log.Println("Grpc server stops")
 	s.srv.Stop()
 }

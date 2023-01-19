@@ -1,10 +1,10 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/mkvy/HttpServerBS/api-gateway/client"
 	"github.com/mkvy/HttpServerBS/api-gateway/internal/utils"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -126,14 +126,12 @@ func (c *Controller) CustController(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) createHandler(w http.ResponseWriter, r *http.Request, model string) {
 	log.Println("Controller sending create " + model)
-	var msg json.RawMessage
-	err := json.NewDecoder(r.Body).Decode(&msg)
+	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	id, errMsg := c.service.Create(msg, model)
+	id, errMsg := c.service.Create(b, model)
 	if errMsg != "" {
 		http.Error(w, errMsg, http.StatusBadRequest)
 		return
@@ -148,14 +146,13 @@ func (c *Controller) patchHandler(w http.ResponseWriter, r *http.Request, model 
 	path := strings.Trim(r.URL.Path, "/")
 	pathParts := strings.Split(path, "/")
 	id := pathParts[3]
-	var msg json.RawMessage
-	err := json.NewDecoder(r.Body).Decode(&msg)
+	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	log.Println("Controller sending patch " + model + " with id " + id)
-	errMsg := c.service.Update(msg, id, model)
+	errMsg := c.service.Update(b, id, model)
 	if errMsg != "" {
 		if errMsg == utils.ErrNotFound.Error() {
 			returnError(w, errMsg, http.StatusNotFound)

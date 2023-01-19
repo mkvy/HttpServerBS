@@ -30,6 +30,7 @@ func GetDBConn(cfg config.Config) (*sql.DB, error) {
 }
 
 func DBClose() {
+	log.Println("DB connection closing")
 	err := db.Close()
 	if err != nil {
 		log.Println("error closing connection with database")

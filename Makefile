@@ -1,7 +1,7 @@
 start-docker:
-		cd docker && docker-compose up
+		cd docker && docker compose up
 stop-docker:
-		cd docker && docker-compose stop
+		cd docker && docker compose stop
 run-gateway:
 		cd api-gateway && go run ./
 run-service:
